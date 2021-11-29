@@ -1,0 +1,19 @@
+/*
+Copyright Filip Chudzicki 2019
+*/
+/* 
+    Created on : 2019-03-18, 20:26:57
+    Author     : fchud
+*/
+
+.wrapper{ width: 350px; padding: 20px; }
+.hidden{ line-height: 0px; position: absolute; left: -2000px; }
+#menu {}
+#nav {margin-bottom: 1rem;}
+.green {background-color: green;}
+.koszt {text-align: right}
+.checkbox_row{padding-top: 10px;}
+
+.opl-add{ padding: 10px;}
+.pagination{display: block;}
+li{float: left;}
