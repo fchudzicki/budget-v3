@@ -4,7 +4,8 @@
  */
 -->
 <?php
-include 'header.php'; ?>
+include 'header.php'; 
+?>
 <div class="container">
   
 <?php
@@ -17,140 +18,95 @@ if (isset($_GET['newYear']))
 }
 
 //Edycja rekordu z modal window
-if (isset($_POST['edytujSubmit']))
-{
-    $id = filter_var($_POST['Id'], FILTER_SANITIZE_NUMBER_INT);
-    $data = filter_var($_POST['dataUpdate'], FILTER_SANITIZE_STRING);
-    $kwota = filter_var($_POST['kwotaUpdate'], FILTER_SANITIZE_STRING);
-    $kwota = str_replace(",",".",$kwota);
-    $typ_id = $_POST['typ_id'];
-    $szczegoly = filter_var($_POST['szczegUpdate'], FILTER_SANITIZE_STRING);
-    $sposob_id = $_POST['sposob_id'];
+// if (isset($_POST['edytujSubmit']))
+// {
+//     $id = filter_var($_POST['Id'], FILTER_SANITIZE_NUMBER_INT);
+//     $data = filter_var($_POST['dataUpdate'], FILTER_SANITIZE_STRING);
+//     $kwota = filter_var($_POST['kwotaUpdate'], FILTER_SANITIZE_STRING);
+//     $kwota = str_replace(",",".",$kwota);
+//     $typ_id = $_POST['typ_id'];
+//     $szczegoly = filter_var($_POST['szczegUpdate'], FILTER_SANITIZE_STRING);
+//     $sposob_id = $_POST['sposob_id'];
 
     
     
     
-   $query = "UPDATE wydatki SET typ_id=?, szczegoly=?, data=?, kwota=?, sposob_id=? WHERE wyd_id=?";
-   $statement = $mysqli->prepare($query);
-   $statement->bind_param('isssii', $typ_id, $szczegoly, $data, $kwota, $sposob_id, $id);
-    if($statement->execute()){
-        print '<div class = "text-success"> Zmieniono rekord o id : ' .$id.' data wydatku '.$data.' kwota '.$kwota.' zł</div>'; 
-   }else{
-       die('Error : ('. $mysqli->errno .') '. $mysqli->error);
-   }
-}
- 
- 
-/*
-//Zmiana statusu opłaty
-if(isset($_POST['zmianaStatusu'])){
-         $id = filter_var($_POST['zmianaStatusu'], FILTER_SANITIZE_NUMBER_INT);
-                             
-                if(isset($_POST['status'])){
-                 $newstatus = filter_var($_POST['status'], FILTER_SANITIZE_NUMBER_INT);
-                }
-                else {$newstatus = 0;}
+//    $query = "UPDATE wydatki SET typ_id=?, szczegoly=?, data=?, kwota=?, sposob_id=? WHERE wyd_id=?";
+//    $statement = $mysqli->prepare($query);
+//    $statement->bind_param('isssii', $typ_id, $szczegoly, $data, $kwota, $sposob_id, $id);
+//     if($statement->execute()){
+//         print '<div class = "text-success"> Zmieniono rekord o id : ' .$id.' data wydatku '.$data.' kwota '.$kwota.' zł</div>'; 
+//    }else{
+//        die('Error : ('. $mysqli->errno .') '. $mysqli->error);
+//    }
+//    $statement->close();
+// }
 
-                $query = "UPDATE platnosc SET status=? WHERE id=?";
-                $statement = $mysqli->prepare($query);
-                $statement->bind_param('ii', $newstatus, $id);
-
-                if($statement->execute()){
-                    
-                }else{
-                    die('Error : ('. $mysqli->errno .') '. $mysqli->error);
-                }
-            }
  
- */
+
 //            Dodawanie rekordu do tabeli
-    if(isset($_POST['dodaj_wydatek'])){
-    $typid = $_POST['typ_wydatku'];
-    $szczegoly = filter_var($_POST['szczegoly'], FILTER_SANITIZE_STRING);
-    $kwota = filter_var($_POST['kwota'], FILTER_SANITIZE_STRING);
-    $kwota = str_replace(",",".",$kwota);
-    $termin = filter_var($_POST['termin'], FILTER_SANITIZE_STRING);
-    $sposobid = $_POST['sposob_platnosci'];
 
-    $query = "INSERT INTO wydatki (typ_id, szczegoly, data, kwota, czas_wpisu, sposob_id) VALUES(?,?,?,?,?,?)";
-    $statement = $mysqli->prepare($query);
-    $statement->bind_param('issssi',$typid,$szczegoly,$termin,$kwota,date("YmdHis"),$sposobid);
-    if($statement->execute()){
-        print '<div class = "text-success"> Dodano rekord o id : ' .$statement->insert_id .' data wydatku '.$termin.' </div>'; 
-    }else{
-        die('Error : ('. $mysqli->errno .') '. $mysqli->error);
-    }
-    $statement->close();
+    if(isset($_POST['dodaj_wydatek'])){
+    
+    $description = filter_var($_POST['description'], FILTER_SANITIZE_STRING);
+    $sum = filter_var($_POST['expsum'], FILTER_SANITIZE_STRING);
+    $sum = str_replace(",",".",$sum);
+    $expensedate = filter_var($_POST['expensedate'], FILTER_SANITIZE_STRING);
+    $userid=$_SESSION['id'];
+ 
+    
+    $expenseid = insExpense($userid,$expensedate,$description,$sum);
+
+ 
+    for ($n=1;$n<=2;$n++){
+
+    $value = $_POST['value_'.$n];
+
+    if (($value==null)||($value==0)){continue;}
+
+    insExpenseType($value,$n,$expenseid);
+       }
 
 }
                 
 ?>
-        <!--Dodawanie wydatku-->
+
+        <!-----------------------Dodawanie wydatku FORM------------------------------------>
+        
         <div class="row">
         <div class="container bg-light col-sm-6" id="wyd-add">
             <h5>Dodaj wydatek</h5>
                 <form method="post">
-                              <div class="form-group row">
-                    <label for="sposob_platnosci" class="col-sm-4 col-form-label">Sposób płatności</label>
-                    <div class="col-sm-6">
-                        <?php
-                       
-                           $sql1 = "SELECT * FROM sposob_platnosci ORDER BY sposob ASC"; 
-                            if($result = $mysqli->query($sql1)){
-                                if($result->num_rows > 0){
-                                    echo '<select class="custom-select" name="sposob_platnosci">';
-                                        while($row = $result->fetch_array()){                                        
-                                  echo '<option value="'.$row['sposob_id'].'">'.$row['sposob'].'</option>';          
-                                }
-                $result->free();
-                } else{
-                    echo "No records matching your query were found.";
-                }
-            } else{
-                echo "ERROR: Could not able to execute $sql1. " . $mysqli->error;
-            }
-            ?>
-                    </select>
-                    </div>
-                </div>
-                <div class="form-group row">
-                    <label for="typ_wydatku" class="col-sm-4 col-form-label">Typ Wydatku</label>
-                    <div class="col-sm-6">
-                        <?php
-                           $sql2 = "SELECT * FROM typ_wydatku ORDER BY typ ASC"; 
-                            if($result = $mysqli->query($sql2)){
-                                if($result->num_rows > 0){
-                                    echo '<select class="custom-select" name="typ_wydatku">';
-                                        while($row = $result->fetch_array()){                                        
-                                  echo '<option value="'.$row['typ_id'].'">'.$row['typ'].'</option>';          
-                                }
-                $result->free();
-                } else{
-                    echo "No records matching your query were found.";
-                }
-            } else{
-                echo "ERROR: Could not able to execute $sql1. " . $mysqli->error;
-            }
-            ?>  
-                    </select>
-                    </div>
-                </div>
+                            
+                
                 <div class="form-group row ">
-                    <label for="dod_wyd_szczegoly" class="col-sm-4 col-form-label">Szczegóły</label>
+                    <label for="ins_description" class="col-sm-4 col-form-label">Szczegóły</label>
                     <div class="col-sm-6">
-                        <input type="text" name="szczegoly" class="form-control" id="dod_wyd_szczegoly" required="true">
+                        <input type="text" name="description" class="form-control" id="ins_description" >
                     </div>
                 </div>
                 <div class="form-group row">
                     <label for="dod_wyd_data" class="col-sm-4 col-form-label">Data</label>
                     <div class="col-sm-6">
-                        <input type="date" class="form-control" id="dod_wyd_data" name="termin" required="true">
+                        <input type="date" class="form-control" id="dod_wyd_data" name="expensedate" required="true">
                     </div>
                 </div>
                 <div class="form-group row ">
-                    <label for="dod_wyd_kwota" class="col-sm-4 col-form-label">Kwota</label>
+                    <label for="ins_value1" class="col-sm-4 col-form-label">Zakupy spożywcze</label>
                     <div class="col-sm-6">
-                        <input type="text" name="kwota" class="form-control" id="dod_wyd_kwota" required="true">
+                        <input type="text" name="value_1" class="form-control" id="ins_value1">
+                    </div>
+                </div>
+                <div class="form-group row ">
+                    <label for="ins_value2" class="col-sm-4 col-form-label">Jedzenie na mieście</label>
+                    <div class="col-sm-6">
+                        <input type="text" name="value_2" class="form-control" id="ins_value2" >
+                    </div>
+                </div>
+                <div class="form-group row ">
+                    <label for="ins_sum" class="col-sm-4 col-form-label">Suma</label>
+                    <div class="col-sm-6">
+                        <input type="text" name="expsum" class="form-control" id="ins_sum" >
                     </div>
                 </div>
                         <div class="form-group row">

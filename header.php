@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <!--
 /* 
- * Copyright Filip Chudzicki 2019
+ * Copyright Filip Chudzicki 2021
  */
 -->
 <?php
@@ -13,7 +13,8 @@ if(!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true){
     header("location: login.php");
     exit;
 }
-require_once 'include/connect.php';
+include 'include/functions.php'; 
+$mysqli = dbconnect();
 ?>
 <html lang="pl">
     <head>
@@ -53,9 +54,7 @@ require_once 'include/connect.php';
                    <li class="nav-item bg-primary shadow-sm">
                        <a class="nav-link text-white" href="#">Statystyki</a>
                    </li>
-                   <li class="nav-item bg-primary shadow-sm">
-                       <a class="nav-link text-white" href="warunki.php">INTELIGENTNY DOM</a>
-                   </li>
+
                    <li class="nav-item bg-primary shadow-sm rounded-right">
                       <?php echo '<a class="nav-link text-white-50" href="include/logout.php">Witaj'. $_SESSION['username'].'[ Wyloguj się! ]</a>'; ?>
                    </li>
