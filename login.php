@@ -9,7 +9,8 @@ if(isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true){
 }
  
 // Include config file
-require_once "include/connect.php";
+require_once "include/functions.php";
+$mysqli = dbconnect();
  
 // Define variables and initialize with empty values
 $username = $password = "";

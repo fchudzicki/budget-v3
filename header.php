@@ -26,7 +26,8 @@ $mysqli = dbconnect();
         <link href="css/style.css" rel="stylesheet" type="text/css"/>
 
         
-        <script src="js/jquery-3.3.1.min.js" type="text/javascript" ></script>
+        <!-- <script src="js/jquery-3.3.1.min.js" type="text/javascript" ></script> -->
+        <script  src="https://code.jquery.com/jquery-3.6.0.min.js"  integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4="  crossorigin="anonymous"></script>
         <script src="js/bootstrap.min.js" type="text/javascript" ></script>
         <!--<script src="js/jquery-ui.min.js" type="text/javascript"></script>-->
         <script src="js/script.js" type="text/javascript"></script>

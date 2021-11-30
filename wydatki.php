@@ -9,6 +9,7 @@ include 'header.php';
 <div class="container">
   
 <?php
+$number_of_exptype = 6;
 $rok = date("Y");
 $teraz = date("Ymd");
 $terazstr = strtotime( $teraz );
@@ -58,7 +59,7 @@ if (isset($_GET['newYear']))
     $expenseid = insExpense($userid,$expensedate,$description,$sum);
 
  
-    for ($n=1;$n<=2;$n++){
+    for ($n=1;$n<=$number_of_exptype;$n++){
 
     $value = $_POST['value_'.$n];
 
@@ -91,22 +92,48 @@ if (isset($_GET['newYear']))
                         <input type="date" class="form-control" id="dod_wyd_data" name="expensedate" required="true">
                     </div>
                 </div>
+                
+
+                <?php 
+                for ($i=1;$i<=$number_of_exptype;$i++) {
+
+                    switch ($i) {
+                        case 1:
+                            $exptypelabel = "Zakupy spożywcze";
+                            break;
+                        case 2:
+                           $exptypelabel = "Posiłki na mieście / w pracy";
+                            break;
+                        case 3:
+                             $exptypelabel = "Jedzenie w podróży służbowej";
+                            break;
+                        case 4:
+                             $exptypelabel = "Wydatki na lekarzy";
+                            break;
+                        case 5:
+                             $exptypelabel = "Wydatki na leki ";
+                            break;
+                        case 6:
+                            $exptypelabel = "Ubrania Monika";
+                            break;    
+                    }
+?>
                 <div class="form-group row ">
-                    <label for="ins_value1" class="col-sm-4 col-form-label">Zakupy spożywcze</label>
+                    <label for="ins_value<?php echo $i;?>" class="col-sm-4 col-form-label"><?php echo $exptypelabel;?></label>
                     <div class="col-sm-6">
-                        <input type="text" name="value_1" class="form-control" id="ins_value1">
+                        <input type="number" step=0.01 name="value_<?php echo $i;?>" class="single_expense form-control" id="ins_value<?php echo $i;?>">
                     </div>
                 </div>
-                <div class="form-group row ">
-                    <label for="ins_value2" class="col-sm-4 col-form-label">Jedzenie na mieście</label>
-                    <div class="col-sm-6">
-                        <input type="text" name="value_2" class="form-control" id="ins_value2" >
-                    </div>
-                </div>
+<?php
+                }
+
+?>
+               
+                
                 <div class="form-group row ">
                     <label for="ins_sum" class="col-sm-4 col-form-label">Suma</label>
                     <div class="col-sm-6">
-                        <input type="text" name="expsum" class="form-control" id="ins_sum" >
+                        <input type="number" step=0.01 name="expsum" class="form-control" id="ins_sum" >
                     </div>
                 </div>
                         <div class="form-group row">
@@ -143,50 +170,57 @@ if (isset($_GET['newYear']))
 
 </div>
     <?php
-    $sql = "SELECT * FROM wydatki, typ_wydatku, sposob_platnosci 
-        WHERE wydatki.typ_id = typ_wydatku.typ_id
-        AND wydatki.sposob_id = sposob_platnosci.sposob_id
-        AND YEAR( wydatki.data ) ='$rok' 
-        ORDER BY wydatki.data  DESC"; 
+/******************************************Tabel query************************************ */
+    $sql = "SELECT * FROM expenses, uzytkownicy 
+         WHERE expenses.userid = uzytkownicy.user_id
+         AND YEAR( expenses.expdate ) ='$rok' 
+         ORDER BY expenses.expdate  DESC";
+
     if($result = $mysqli->query($sql)){
         if($result->num_rows > 0){
-            echo "<table class='table table-hover' id='tabelaOplat' >";
-                echo "<thead>";
-                    echo "<tr>";
-                        echo "<th scope='col'>Data</th>";
-                        echo "<th scope='col'>Kwota</th>";
-                        echo "<th scope='col'>Płatność</th>";
-                        echo "<th scope='col'>Typ Wydatku</th>";
-                        echo "<th scope='col'>Szczegóły</th>";
-                        echo "<th scope='col'></th>";
-                    echo "</tr>";
-                echo "</thead>";
-                echo "<tbody id='daneTabeli'>";
+            ?>
+            <table class='table table-hover' id='tabelaOplat' >
+                <thead>
+                    <tr>
+                        <th scope='col'>Data</th>
+                        <th scope='col'>Opis</th>
+                       <th scope='col'>Suma</th>
+                      <th scope='col'>Kto zapisał</th>
+                       <th scope='col'></th>
+                   </tr>
+              </thead>
+             <tbody id='daneTabeli'>
+            <?php
             while($row = $result->fetch_array()){
-
                 $bgkolor = "";
-                $id =  $row["wyd_id"];
-                $koszt = $row["kwota"];
-                $koszt = str_replace(".",",",$koszt);
-                $data = $row["data"];
-                $szczeg_wyd = $row["szczegoly"];
-                $typ_wydatku = $row["typ"];
-                $typ_id_wyd = $row["typ_id"];
-                $sposob_wyd = $row["sposob"];
-                $sposob_wyd_id= $row["sposob_id"];
+                $expdescription = $row["expdescription"];
+                $data = $row["expdate"];
+                $expsum = $row["expsum"];
+                $expsum = str_replace(".",",",$expsum);
+                $username= $row["user"];                
+                $id =  $row["exp_id"];
+               
+                
+                ?>
+              
              
  
 
-                    echo "<tr>";
-                    echo "<td>" . $data . "</td>";
-                    echo "<th scope='row'> <span>". $koszt . " zł</span></td>";
+                    <tr>
+                    <td><?php echo $data;?></td>
+                    <td><?php echo $expdescription;?></td>
+                    <th scope='row'> <span><?php echo $expsum;?> zł</span></td>
+                    <td><?php echo $username;?></td>
                        
-                        echo "<td>" . $sposob_wyd. "</td>";
-                        echo "<td>" . $typ_wydatku. "</td>";
-                        echo "<td>" .$szczeg_wyd."</td>";
-                        echo "<td><button type='button' class='btn btn-danger' data-toggle='modal' data-target='#wydModal".$id."'>Edytuj</button>";
-//                        Modal Window start    
-                        echo "<div class='modal fade' id='wydModal".$id."' tabindex='-1' role='dialog' aria-labelledby='exampleModalLabel' aria-hidden='true'>
+                                             
+                        <td><button type='button' class='btn btn-danger' data-toggle='modal' data-target='#wydModal<?php echo $id;?>'>Edytuj</button>
+
+                    <?php    
+                    /************************   Modal Window start   */
+                   
+                    
+                    ?>
+                        <div class='modal fade' id='wydModal<?php echo $id;?>' tabindex='-1' role='dialog' aria-labelledby='exampleModalLabel' aria-hidden='true'>
                             <div class='modal-dialog' role='document'>
                                 <form method='post'>    
                                     <div class='modal-content'>
@@ -196,61 +230,53 @@ if (isset($_GET['newYear']))
                                               <span aria-hidden='true'>&times;</span>
                                             </button>
                                         </div>
-                                        <div class='modal-body'>
-                                        <input name='Id' value = '$id' hidden>";
-                                     if($result1 = $mysqli->query($sql1)){
-                                         if($result1->num_rows > 0){
-                                 echo '<div class="form-group row">'
-                                             . '<label for="sposob_id" class="col col-form-label">Sposób płatności</label>'
-                                             . '<select class="custom-select col-6" name="sposob_id">';
-                                    while($row1 = $result1->fetch_array()){                                        
-                                          echo '<option value="'.$row1['sposob_id'].'">'.$row1['sposob'].'</option>';
-                                          
-                                         }
-                                        $result1->free();
+                                        <div class="modal-body">
+                                        <input name='Id' value = "<?php echo $id;?>" hidden>   
+                                    
+                                        <div class='form-group row'>
+                                            <label for='kwota<?php echo $id;?>' class='col col-form-label'>Kwota</label>
+                                            <input id='kwota<?php echo $id;?>'class = 'col-6 form-control inputNazwa' name='kwotaUpdate' type='' value='<?php echo $expsum; ?>'>
+                                        </div>
+                                        <div class='form-group row'>
+                                            <label for='data<?php echo $id;?>' class='col col-form-label'>Termin płatności</label>                                        
+                                            <input id='data<?php echo $id;?>'class = 'col-6 form-control inputKonto' name='dataUpdate' type='date' value='<?php echo $data; ?>'>
+                                        </div>
+                                        <label for='szczeg<?php echo $id;?>' class='col-sm-5 col-form-label'>Szczegóły</label>                                        
+                                        <input id='szczeg<?php echo $id;?>'class = 'form-control inputSzczeg' name='szczegUpdate' type='text' value='<?php echo $expdescription; ?>'>
+<?php
 
-                                    } else{
-                                        echo "No records matching your query were found.";
-                                        }
-                                    } else{ 
-                                        echo "ERROR: Could not able to execute $sql1. " . $mysqli->error;
-                                    }
-                                    echo '<option value="'.$sposob_wyd_id.'" selected>'.$sposob_wyd.'</option>';
-                                echo "</select></div>";
-                                
-                                 if($result2 = $mysqli->query($sql2)){
-                                                               if($result2->num_rows > 0){
-                                 echo '<div class="form-group row">'
-                                    . '<label for="typ_id" class="col col-form-label">Typ wydatku</label>'
-                                    . '<select class="col-6 custom-select" name="typ_id">';
-                                    while($row2 = $result2->fetch_array()){                                        
-                                          echo '<option value="'.$row2['typ_id'].'">'.$row2['typ'].'</option>';
-                                          
-                                         }
-                                        $result1->free();
+                                    $sqlexptype = "SELECT * FROM expenses, exptype, exptypename 
+                                    WHERE expenses.exp_id = '$id'
+                                    AND exptype.expenseid = '$id'
+                                    AND exptype.typenameid = exptypename.exptype_id
+                                    ORDER BY exptype.typenameid  ASC";
 
-                                    } else{
-                                        echo "No records matching your query were found.";
+                                    if($result1 = $mysqli->query($sqlexptype)){
+                                        if($result1->num_rows > 0){
+                                   while($row1 = $result1->fetch_array()){
+                                       
+                                    $expid = $row1["expenseid"];
+                                   
+                                    ?>
+
+                                    <div class='form-group row'>
+                                    <label for='expensetype_<?php echo $expid;?>' class='col col-form-label'><?php echo $row1["name"];?></label>
+                                    <input id='expensetype_<?php echo $expid;?>'class = 'col-6 form-control inputNazwa' name='expensetype_<?php echo $expid;?>update' type='text' value='<?php echo $row1["cost"]; ?>'>
+                                </div>
+                                         <?php
                                         }
-                                    } else{ 
-                                        echo "ERROR: Could not able to execute $sql1. " . $mysqli->error;
-                                    }
-                                    echo '<option value="'.$typ_id_wyd.'" selected>'.$typ_wydatku.'</option>';
-                                     echo "</select></div>";
-                                     
-                                 echo "
-                                    <div class='form-group row'>
-                                        <label for='kwota".$id."' class='col col-form-label'>Kwota</label>
-                                        <input id='kwota".$id."'class = 'col-6 form-control inputNazwa' name='kwotaUpdate' type='text' value='" . $koszt . "'>
-                                    </div>
-                                    <div class='form-group row'>
-                                        <label for='data".$id."' class='col col-form-label'>Termin płatności</label>                                        
-                                        <input id='data".$id."'class = 'col-6 form-control inputKonto' name='dataUpdate' type='date' value='" . $data . "'>
-                                    </div>
-                                    <label for='szczeg".$id."' class='col-sm-5 col-form-label'>Szczegóły</label>                                        
-                                    <input id='szczeg".$id."'class = 'form-control inputSzczeg' name='szczegUpdate' type='text' value='" . $szczeg_wyd . "'>
-                                
-                                        <div class='modal-footer'>
+                                       $result1->free();
+
+                                   } else{
+                                       echo "No records matching your query were found.";
+                                       }
+                                   } else{ 
+                                       echo "ERROR: Could not able to execute $sqlexptype. " . $mysqli->error;
+                                   }
+
+                                    
+                                echo
+                                        "<div class='modal-footer'>
                                           <button type='button' class='btn btn-secondary' data-dismiss='modal'>Zamknij</button>
                                           <button type='submit' name ='edytujSubmit' class='btn btn-primary'>Zapisz zmiany</button>
                                         </div>
@@ -279,9 +305,9 @@ if (isset($_GET['newYear']))
     ?>
 
 
-                          
+                        
+<script src="js\expense_form.js" type="text/javascript"></script>
 
- 
 
 </div> 
 </body>
