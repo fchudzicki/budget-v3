@@ -9,7 +9,7 @@ include 'header.php';
 <div class="container">
   
 <?php
-$number_of_exptype = 6;
+$number_of_exptype = 9;
 $rok = date("Y");
 $teraz = date("Ymd");
 $terazstr = strtotime( $teraz );
@@ -18,30 +18,38 @@ if (isset($_GET['newYear']))
     $rok = filter_var($_GET['newYear'], FILTER_SANITIZE_NUMBER_INT);
 }
 
-//Edycja rekordu z modal window
-// if (isset($_POST['edytujSubmit']))
-// {
-//     $id = filter_var($_POST['Id'], FILTER_SANITIZE_NUMBER_INT);
-//     $data = filter_var($_POST['dataUpdate'], FILTER_SANITIZE_STRING);
-//     $kwota = filter_var($_POST['kwotaUpdate'], FILTER_SANITIZE_STRING);
-//     $kwota = str_replace(",",".",$kwota);
-//     $typ_id = $_POST['typ_id'];
-//     $szczegoly = filter_var($_POST['szczegUpdate'], FILTER_SANITIZE_STRING);
-//     $sposob_id = $_POST['sposob_id'];
+// Edycja rekordu z modal window
+if (isset($_POST['edytujSubmit']))
+
+
+{
+  
+
+    function updatemodalmain(){
 
     
+
+    $id = filter_var($_POST['Id'], FILTER_SANITIZE_NUMBER_INT);
+    $data = filter_var($_POST['dataUpdate'], FILTER_SANITIZE_STRING);
+    $kwota = filter_var($_POST['kwotaUpdate'], FILTER_SANITIZE_STRING);
+    $kwota = str_replace(",",".",$kwota);
+    $description = filter_var($_POST['szczegUpdate'], FILTER_SANITIZE_STRING);
+
+   $mysqli = dbconnect();
     
     
-//    $query = "UPDATE wydatki SET typ_id=?, szczegoly=?, data=?, kwota=?, sposob_id=? WHERE wyd_id=?";
-//    $statement = $mysqli->prepare($query);
-//    $statement->bind_param('isssii', $typ_id, $szczegoly, $data, $kwota, $sposob_id, $id);
-//     if($statement->execute()){
-//         print '<div class = "text-success"> Zmieniono rekord o id : ' .$id.' data wydatku '.$data.' kwota '.$kwota.' zł</div>'; 
-//    }else{
-//        die('Error : ('. $mysqli->errno .') '. $mysqli->error);
-//    }
-//    $statement->close();
-// }
+   $query = "UPDATE expenses, exptype SET expdescription=?, expdate=?, expsum=?  WHERE expenses.exp_id=$id AND exptype.expenseid=$id";
+   $statement = $mysqli->prepare($query);
+   $statement->bind_param('sss', $description, $data, $kwota);
+    if($statement->execute()){
+        print '<div class = "text-success"> Zmieniono rekord o id : ' .$id.' data wydatku '.$data.' kwota '.$kwota.' zł</div>'; 
+   }else{
+       die('Error : ('. $mysqli->errno .') '. $mysqli->error);
+   }
+   $statement->close();
+}
+updatemodalmain();
+}
 
  
 
@@ -75,64 +83,148 @@ if (isset($_GET['newYear']))
         <!-----------------------Dodawanie wydatku FORM------------------------------------>
         
         <div class="row">
-        <div class="container bg-light col-sm-6" id="wyd-add">
-            <h5>Dodaj wydatek</h5>
+        <div class="container bg-light col-sm-9" id="wyd-add">
+            <h5>Dodaj wydatek </h5>
                 <form method="post">
-                            
-                
+    
+
+
                 <div class="form-group row ">
-                    <label for="ins_description" class="col-sm-4 col-form-label">Szczegóły</label>
-                    <div class="col-sm-6">
+                    <label for="ins_description" class="col-sm-6 col-form-label">Szczegóły</label>
+                    <div class="col-sm-5">
                         <input type="text" name="description" class="form-control" id="ins_description" >
                     </div>
                 </div>
                 <div class="form-group row">
-                    <label for="dod_wyd_data" class="col-sm-4 col-form-label">Data</label>
-                    <div class="col-sm-6">
+                    <label for="dod_wyd_data" class="col-sm-6 col-form-label">Data</label>
+                    <div class="col-sm-5">
                         <input type="date" class="form-control" id="dod_wyd_data" name="expensedate" required="true">
                     </div>
                 </div>
-                
+    
 
-                <?php 
-                for ($i=1;$i<=$number_of_exptype;$i++) {
 
-                    switch ($i) {
-                        case 1:
-                            $exptypelabel = "Zakupy spożywcze";
-                            break;
-                        case 2:
-                           $exptypelabel = "Posiłki na mieście / w pracy";
-                            break;
-                        case 3:
-                             $exptypelabel = "Jedzenie w podróży służbowej";
-                            break;
-                        case 4:
-                             $exptypelabel = "Wydatki na lekarzy";
-                            break;
-                        case 5:
-                             $exptypelabel = "Wydatki na leki ";
-                            break;
-                        case 6:
-                            $exptypelabel = "Ubrania Monika";
-                            break;    
-                    }
-?>
-                <div class="form-group row ">
-                    <label for="ins_value<?php echo $i;?>" class="col-sm-4 col-form-label"><?php echo $exptypelabel;?></label>
-                    <div class="col-sm-6">
-                        <input type="number" step=0.01 name="value_<?php echo $i;?>" class="single_expense form-control" id="ins_value<?php echo $i;?>">
+
+                <div class="accordion" id="accordionExample">
+                <div class="card">
+                    <div class="card-header" id="headingOne">
+                    <h2 class="mb-0">
+                        <button class="btn btn-link btn-block text-left" type="button" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                        Jedzenie i picie <i class="fas fa-utensils"></i>
+                        </button>
+                    </h2>
+                    </div>
+                   
+                    <div id="collapseOne" class="collapse show" aria-labelledby="headingOne" data-parent="#accordionExample">
+                    <div class="card-body">
+                        <?php $i = 1 ?>
+                        <div class="form-group row ">
+                            <label for="ins_value<?php echo $i;?>" class="col-sm-6 col-form-label"><?php echo exptypename($i);?></label>
+                            <div class="col-sm-5">
+                                <input type="number" step=0.01 name="value_<?php echo $i;?>" class="single_expense form-control" id="ins_value<?php echo $i;?>">
+                            </div>
+                        </div>
+                        <?php $i = 2 ?>
+                         <div class="form-group row ">
+                            <label for="ins_value<?php echo $i;?>" class="col-sm-6 col-form-label"><?php echo exptypename($i);?></label>
+                            <div class="col-sm-5">
+                                <input type="number" step=0.01 name="value_<?php echo $i;?>" class="single_expense form-control" id="ins_value<?php echo $i;?>">
+                            </div>
+                        </div>
+                        <?php $i = 3 ?>
+                         <div class="form-group row ">
+                            <label for="ins_value<?php echo $i;?>" class="col-sm-6 col-form-label"><?php echo exptypename($i);?></label>
+                            <div class="col-sm-5">
+                                <input type="number" step=0.01 name="value_<?php echo $i;?>" class="single_expense form-control" id="ins_value<?php echo $i;?>">
+                            </div>
+                        </div>
+                    </div>
                     </div>
                 </div>
+                <div class="card">
+                    <div class="card-header" id="headingTwo">
+                    <h2 class="mb-0">
+                        <button class="btn btn-link btn-block text-left collapsed" type="button" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                        Wydatki medyczne
+                        </button>
+                    </h2>
+                    </div>
+                    <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionExample">
+                    <div class="card-body">
+                        <?php $i = 4 ?>
+                        <div class="form-group row ">
+                            <label for="ins_value<?php echo $i;?>" class="col-sm-6 col-form-label"><?php echo exptypename($i);?></label>
+                            <div class="col-sm-5">
+                                <input type="number" step=0.01 name="value_<?php echo $i;?>" class="single_expense form-control" id="ins_value<?php echo $i;?>">
+                            </div>
+                        </div>
+                        <?php $i = 5 ?>
+                         <div class="form-group row ">
+                            <label for="ins_value<?php echo $i;?>" class="col-sm-6 col-form-label"><?php echo exptypename($i);?></label>
+                            <div class="col-sm-5">
+                                <input type="number" step=0.01 name="value_<?php echo $i;?>" class="single_expense form-control" id="ins_value<?php echo $i;?>">
+                            </div>
+                        </div>
+                    </div>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-header" id="headingThree">
+                    <h2 class="mb-0">
+                        <button class="btn btn-link btn-block text-left collapsed" type="button" data-toggle="collapse" data-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+                       Ubrania
+                        </button>
+                    </h2>
+                    </div>
+                    <div id="collapseThree" class="collapse" aria-labelledby="headingThree" data-parent="#accordionExample">
+                    <div class="card-body">
+                    <?php for($i = 6;$i<=10;$i++){ ?>
+                                     
+                         <div class="form-group row ">
+                            <label for="ins_value<?php echo $i;?>" class="col-sm-6 col-form-label"><?php echo exptypename($i);?></label>
+                            <div class="col-sm-5">
+                                <input type="number" step=0.01 name="value_<?php echo $i;?>" class="single_expense form-control" id="ins_value<?php echo $i;?>">
+                            </div>
+                        </div>
+                        <?php }?>
+                    </div>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-header" id="headingThree">
+                    <h2 class="mb-0">
+                        <button class="btn btn-link btn-block text-left collapsed" type="button" data-toggle="collapse" data-target="#collapse4" aria-expanded="false" aria-controls="collapseThree">
+                       Koszty mieszkania
+                        </button>
+                    </h2>
+                    </div>
+                    <div id="collapse4" class="collapse" aria-labelledby="headingThree" data-parent="#accordionExample">
+                    <div class="card-body">
+                    <?php for($i = 11;$i<=13;$i++){ ?>
+                                     
+                         <div class="form-group row ">
+                            <label for="ins_value<?php echo $i;?>" class="col-sm-6 col-form-label"><?php echo exptypename($i);?></label>
+                            <div class="col-sm-5">
+                                <input type="number" step=0.01 name="value_<?php echo $i;?>" class="single_expense form-control" id="ins_value<?php echo $i;?>">
+                            </div>
+                        </div>
+                        <?php }?>
+                    </div>
+                    </div>
+                </div>
+                </div>
+
+
+                
 <?php
-                }
+               
 
 ?>
                
                 
                 <div class="form-group row ">
-                    <label for="ins_sum" class="col-sm-4 col-form-label">Suma</label>
-                    <div class="col-sm-6">
+                    <label for="ins_sum" class="col-sm-6 col-form-label">Suma</label>
+                    <div class="col-sm-5">
                         <input type="number" step=0.01 name="expsum" class="form-control" id="ins_sum" >
                     </div>
                 </div>
@@ -213,7 +305,7 @@ if (isset($_GET['newYear']))
                     <td><?php echo $username;?></td>
                        
                                              
-                        <td><button type='button' class='btn btn-danger' data-toggle='modal' data-target='#wydModal<?php echo $id;?>'>Edytuj</button>
+                        <td><button type='button' class='btn btn-danger' data-toggle='modal' data-target='#wydModal<?php echo $id;?>'>Szczegóły</button>
 
                     <?php    
                     /************************   Modal Window start   */
@@ -231,38 +323,42 @@ if (isset($_GET['newYear']))
                                             </button>
                                         </div>
                                         <div class="modal-body">
-                                        <input name='Id' value = "<?php echo $id;?>" hidden>   
-                                    
-                                        <div class='form-group row'>
-                                            <label for='kwota<?php echo $id;?>' class='col col-form-label'>Kwota</label>
-                                            <input id='kwota<?php echo $id;?>'class = 'col-6 form-control inputNazwa' name='kwotaUpdate' type='' value='<?php echo $expsum; ?>'>
-                                        </div>
-                                        <div class='form-group row'>
-                                            <label for='data<?php echo $id;?>' class='col col-form-label'>Termin płatności</label>                                        
-                                            <input id='data<?php echo $id;?>'class = 'col-6 form-control inputKonto' name='dataUpdate' type='date' value='<?php echo $data; ?>'>
-                                        </div>
-                                        <label for='szczeg<?php echo $id;?>' class='col-sm-5 col-form-label'>Szczegóły</label>                                        
-                                        <input id='szczeg<?php echo $id;?>'class = 'form-control inputSzczeg' name='szczegUpdate' type='text' value='<?php echo $expdescription; ?>'>
-<?php
+                                            <input name='Id' value = "<?php echo $id;?>" hidden>   
+                                            <div class="container">
+                                                <div class='form-group row'>
+                                                    <label for='kwota<?php echo $id;?>' class='col col-form-label'>Suma</label>
+                                                    <input id='kwota<?php echo $id;?>'class = 'col-6 form-control inputNazwa' name='kwotaUpdate' type='' value='<?php echo $expsum; ?>'>
+                                                </div>
+                                                <div class='form-group row'>
+                                                    <label for='data<?php echo $id;?>' class='col col-form-label'>Data wydatku</label>                                        
+                                                    <input id='data<?php echo $id;?>'class = 'col-6 form-control inputKonto' name='dataUpdate' type='date' value='<?php echo $data; ?>'>
+                                                </div>
+                                                <div class='form-group row'>
+                                                    <label for='szczeg<?php echo $id;?>' class='col-sm-5 col-form-label'>Opis</label>                                        
+                                                    <input id='szczeg<?php echo $id;?>'class = 'form-control inputSzczeg' name='szczegUpdate' type='text' value='<?php echo $expdescription; ?>'>
+                                                </div>
+                                                <?php
 
-                                    $sqlexptype = "SELECT * FROM expenses, exptype, exptypename 
-                                    WHERE expenses.exp_id = '$id'
-                                    AND exptype.expenseid = '$id'
-                                    AND exptype.typenameid = exptypename.exptype_id
-                                    ORDER BY exptype.typenameid  ASC";
+                                                $sqlexptype = "SELECT * FROM expenses, exptype, exptypename 
+                                                WHERE expenses.exp_id = '$id'
+                                                AND exptype.expenseid = '$id'
+                                                AND exptype.typenameid = exptypename.exptype_id
+                                                ORDER BY exptype.typenameid  ASC";
 
-                                    if($result1 = $mysqli->query($sqlexptype)){
-                                        if($result1->num_rows > 0){
-                                   while($row1 = $result1->fetch_array()){
-                                       
-                                    $expid = $row1["expenseid"];
-                                   
-                                    ?>
+                                                if($result1 = $mysqli->query($sqlexptype)){
+                                                    if($result1->num_rows > 0){
+                                                    while($row1 = $result1->fetch_array()){
+                                                
+                                                $expid = $row1["expenseid"];
+                                            
+                                                ?>
 
-                                    <div class='form-group row'>
-                                    <label for='expensetype_<?php echo $expid;?>' class='col col-form-label'><?php echo $row1["name"];?></label>
-                                    <input id='expensetype_<?php echo $expid;?>'class = 'col-6 form-control inputNazwa' name='expensetype_<?php echo $expid;?>update' type='text' value='<?php echo $row1["cost"]; ?>'>
-                                </div>
+                                                <div class='form-group row'>
+                                                    <label for='expensetype_<?php echo $expid;?>' class='col col-form-label'><?php echo $row1["name"];?></label>
+                                                    <input id='expensetype_<?php echo $expid;?>'class = 'col-6 form-control inputNazwa' disabled name='expensetype_<?php echo $expid;?>update' type='text' value='<?php echo $row1["cost"]; ?>'>
+                                                </div>
+                                            
+                                               
                                          <?php
                                         }
                                        $result1->free();
@@ -274,21 +370,25 @@ if (isset($_GET['newYear']))
                                        echo "ERROR: Could not able to execute $sqlexptype. " . $mysqli->error;
                                    }
 
-                                    
-                                echo
-                                        "<div class='modal-footer'>
+                                    ?>
+                                            </div>
+                                        </div>
+                                        <div class='modal-footer'>
                                           <button type='button' class='btn btn-secondary' data-dismiss='modal'>Zamknij</button>
                                           <button type='submit' name ='edytujSubmit' class='btn btn-primary'>Zapisz zmiany</button>
                                         </div>
+                                        
                                     </div>
                                 </form>
                             </div>
-                          </div>";
-                        echo"</td>";
-                    echo "</tr>";
-                     }
-                echo "</tbody>";
-            echo "</table>";
+                          </div>
+                        </td>
+                    </tr>
+
+                    <?php } ?>
+                </tbody>
+            </table>
+           <?php
             $result->free();
         } else{
             echo "No records matching your query were found.";
@@ -296,7 +396,7 @@ if (isset($_GET['newYear']))
     } else{
         echo "ERROR: Could not able to execute $sql. " . $mysqli->error;
     }
-//Koniec tabeli z opłatami
+//Koniec tabeli z wydatkami
     
     
     
@@ -306,9 +406,10 @@ if (isset($_GET['newYear']))
 
 
                         
-<script src="js\expense_form.js" type="text/javascript"></script>
+
 
 
 </div> 
+<script src="js\expense_form.js" type="text/javascript"></script>
 </body>
 </html>

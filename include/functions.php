@@ -7,6 +7,7 @@
 
  
     /* Attempt to connect to MySQL database */
+    // $mysqli = new mysqli('localhost', 'chudziccy_1','QAZ123wsx', 'chudziccy_1');
     $mysqli = new mysqli('localhost', 'root','', 'chudziccy_1');
      $mysqli->set_charset("utf8");
     // Check connection
@@ -34,6 +35,22 @@ function insExpenseType($value,$expcat,$expensid){
 $statement->close();
    
 
+}
+
+function exptypename($id){
+    $mysqli = dbconnect();
+
+    $sqlexptypename = "SELECT * FROM exptypename";
+  
+if($result = $mysqli->query($sqlexptypename)){
+        if($result->num_rows > 0){
+
+           $result -> data_seek($id-1);
+           $row = $result->fetch_row();
+           return $row[1];
+
+        }
+    }
 }
 
 function insExpense($userid,$expensedate,$description,$sum){

@@ -17,3 +17,7 @@ Copyright Filip Chudzicki 2019
 .opl-add{ padding: 10px;}
 .pagination{display: block;}
 li{float: left;}
+.col-form-label {
+line-height: 1;
+text-align: right;
+}

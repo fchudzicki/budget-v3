@@ -1,4 +1,4 @@
-$('document').ready(function(){
+$('document').ready(function(){  
 'use strict';
 
 var numberOfItems = $('#daneTabeli tr').length; // Get total number of the items that should be paginated
