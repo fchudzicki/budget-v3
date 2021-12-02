@@ -9,7 +9,8 @@ include 'header.php';
 <div class="container">
   
 <?php
-$number_of_exptype = 9;
+
+
 $rok = date("Y");
 $teraz = date("Ymd");
 $terazstr = strtotime( $teraz );
@@ -17,6 +18,10 @@ if (isset($_GET['newYear']))
 {
     $rok = filter_var($_GET['newYear'], FILTER_SANITIZE_NUMBER_INT);
 }
+
+
+// Ilość typów wydatku
+$number_of_exptype = exptypenumber();
 
 // Edycja rekordu z modal window
 if (isset($_POST['edytujSubmit']))
@@ -106,112 +111,41 @@ updatemodalmain();
 
 
                 <div class="accordion" id="accordionExample">
-                <div class="card">
-                    <div class="card-header" id="headingOne">
-                    <h2 class="mb-0">
-                        <button class="btn btn-link btn-block text-left" type="button" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
-                        Jedzenie i picie <i class="fas fa-utensils"></i>
-                        </button>
-                    </h2>
-                    </div>
-                   
-                    <div id="collapseOne" class="collapse show" aria-labelledby="headingOne" data-parent="#accordionExample">
-                    <div class="card-body">
-                        <?php $i = 1 ?>
-                        <div class="form-group row ">
-                            <label for="ins_value<?php echo $i;?>" class="col-sm-6 col-form-label"><?php echo exptypename($i);?></label>
-                            <div class="col-sm-5">
-                                <input type="number" step=0.01 name="value_<?php echo $i;?>" class="single_expense form-control" id="ins_value<?php echo $i;?>">
+                    <?php 
+                    for ($i=1;($i<=expcatnumber());$i++){
+
+                    
+
+                        ?>
+                        
+                    <div class="card">
+                        <div class="card-header" id="heading<?php echo $i;?>">
+                            <h2 class="mb-0">
+                                <button class="btn btn-link btn-block text-left collapsed" type="button" data-toggle="collapse" data-target="#collapse<?php echo $i;?>" aria-expanded="true" aria-controls="collapse<?php echo $i;?>">
+                                <?php echo expcatename($i);?>
+                                </button>
+                            </h2>
+                        </div>
+                        <div id="collapse<?php echo $i;?>" class="collapse " aria-labelledby="heading<?php echo $i;?>" data-parent="#accordionExample">
+                            <div class="card-body">
+                                <?php for($j=1;$j<=number_type_in_cat($i);$j++){
+?>
+                            <div class="form-group row ">
+                                <label for="ins_value<?php echo exptype_id_forcat($j,$i);?>" class="col-sm-6 col-form-label"><?php echo exptypename_forcat($j,$i) ;?></label>
+                                <div class="col-sm-5">
+                                    <input type="number" step=0.01 name="value_<?php echo exptype_id_forcat($j,$i);?>" class="single_expense form-control" id="ins_value<?php echo exptype_id_forcat($j,$i);?>">
+                                </div>
+                            </div>
+                                 <?php } ?>
                             </div>
                         </div>
-                        <?php $i = 2 ?>
-                         <div class="form-group row ">
-                            <label for="ins_value<?php echo $i;?>" class="col-sm-6 col-form-label"><?php echo exptypename($i);?></label>
-                            <div class="col-sm-5">
-                                <input type="number" step=0.01 name="value_<?php echo $i;?>" class="single_expense form-control" id="ins_value<?php echo $i;?>">
-                            </div>
                         </div>
-                        <?php $i = 3 ?>
-                         <div class="form-group row ">
-                            <label for="ins_value<?php echo $i;?>" class="col-sm-6 col-form-label"><?php echo exptypename($i);?></label>
-                            <div class="col-sm-5">
-                                <input type="number" step=0.01 name="value_<?php echo $i;?>" class="single_expense form-control" id="ins_value<?php echo $i;?>">
-                            </div>
-                        </div>
-                    </div>
-                    </div>
-                </div>
-                <div class="card">
-                    <div class="card-header" id="headingTwo">
-                    <h2 class="mb-0">
-                        <button class="btn btn-link btn-block text-left collapsed" type="button" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
-                        Wydatki medyczne
-                        </button>
-                    </h2>
-                    </div>
-                    <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionExample">
-                    <div class="card-body">
-                        <?php $i = 4 ?>
-                        <div class="form-group row ">
-                            <label for="ins_value<?php echo $i;?>" class="col-sm-6 col-form-label"><?php echo exptypename($i);?></label>
-                            <div class="col-sm-5">
-                                <input type="number" step=0.01 name="value_<?php echo $i;?>" class="single_expense form-control" id="ins_value<?php echo $i;?>">
-                            </div>
-                        </div>
-                        <?php $i = 5 ?>
-                         <div class="form-group row ">
-                            <label for="ins_value<?php echo $i;?>" class="col-sm-6 col-form-label"><?php echo exptypename($i);?></label>
-                            <div class="col-sm-5">
-                                <input type="number" step=0.01 name="value_<?php echo $i;?>" class="single_expense form-control" id="ins_value<?php echo $i;?>">
-                            </div>
-                        </div>
-                    </div>
-                    </div>
-                </div>
-                <div class="card">
-                    <div class="card-header" id="headingThree">
-                    <h2 class="mb-0">
-                        <button class="btn btn-link btn-block text-left collapsed" type="button" data-toggle="collapse" data-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
-                       Ubrania
-                        </button>
-                    </h2>
-                    </div>
-                    <div id="collapseThree" class="collapse" aria-labelledby="headingThree" data-parent="#accordionExample">
-                    <div class="card-body">
-                    <?php for($i = 6;$i<=10;$i++){ ?>
-                                     
-                         <div class="form-group row ">
-                            <label for="ins_value<?php echo $i;?>" class="col-sm-6 col-form-label"><?php echo exptypename($i);?></label>
-                            <div class="col-sm-5">
-                                <input type="number" step=0.01 name="value_<?php echo $i;?>" class="single_expense form-control" id="ins_value<?php echo $i;?>">
-                            </div>
-                        </div>
-                        <?php }?>
-                    </div>
-                    </div>
-                </div>
-                <div class="card">
-                    <div class="card-header" id="headingThree">
-                    <h2 class="mb-0">
-                        <button class="btn btn-link btn-block text-left collapsed" type="button" data-toggle="collapse" data-target="#collapse4" aria-expanded="false" aria-controls="collapseThree">
-                       Koszty mieszkania
-                        </button>
-                    </h2>
-                    </div>
-                    <div id="collapse4" class="collapse" aria-labelledby="headingThree" data-parent="#accordionExample">
-                    <div class="card-body">
-                    <?php for($i = 11;$i<=13;$i++){ ?>
-                                     
-                         <div class="form-group row ">
-                            <label for="ins_value<?php echo $i;?>" class="col-sm-6 col-form-label"><?php echo exptypename($i);?></label>
-                            <div class="col-sm-5">
-                                <input type="number" step=0.01 name="value_<?php echo $i;?>" class="single_expense form-control" id="ins_value<?php echo $i;?>">
-                            </div>
-                        </div>
-                        <?php }?>
-                    </div>
-                    </div>
-                </div>
+                    <?php }      ?>
+             
+
+              
+
+
                 </div>
 
 

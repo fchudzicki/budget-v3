@@ -54,6 +54,9 @@ $mysqli = dbconnect();
                        <a class="nav-link text-white" href="wydatki.php">Wydatki</a>
                    </li>
                    <li class="nav-item bg-primary shadow-sm">
+                       <a class="nav-link text-white" href="exptype.php">Edycja Typów wydatków</a>
+                   </li>
+                   <li class="nav-item bg-primary shadow-sm">
                        <a class="nav-link text-white" href="zajecia.php">Zajęcia NFM</a>
                    </li>
                    <li class="nav-item bg-primary shadow-sm">
