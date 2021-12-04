@@ -3,7 +3,7 @@ $('document').ready(function(){
 
 var numberOfItems = $('#daneTabeli tr').length; // Get total number of the items that should be paginated
 
-var limitPerPage = 25; // Limit of items per each page
+var limitPerPage = 50; // Limit of items per each page
 
 
 
