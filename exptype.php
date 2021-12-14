@@ -216,6 +216,6 @@ update_exp_type();
 
 
 </div> 
-<script src="js\expense_form.js" type="text/javascript"></script>
+
 </body>
 </html>

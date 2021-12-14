@@ -35,13 +35,13 @@
         }
     }
 
-    function insExpense($userid,$expensedate,$description,$sum){
+    function insExpense($userid,$expensedate,$description,$sum,$newdate){
 
         $mysqli = dbconnect();
     
-    $query = "INSERT INTO expenses (userid, expdate, expdescription, expsum) VALUES(?,?,?,?)";
+    $query = "INSERT INTO expenses (userid, expdate, expdescription, expsum, entry_time) VALUES(?,?,?,?,?)";
     $statement = $mysqli->prepare($query);
-    $statement->bind_param('isss',$userid,$expensedate,$description,$sum);
+    $statement->bind_param('issss',$userid,$expensedate,$description,$sum,$newdate);
     
     
     if($statement->execute()){
@@ -56,6 +56,8 @@
     
     return $expenseid;
     }
+
+
     function insExpenseType($value,$expcat,$expensid){
     $mysqli = dbconnect();
 
@@ -162,7 +164,7 @@ function exptypenumber(){
     $sqlexptypename = "SELECT exptype_id FROM exptypename";
     if($result = $mysqli->query($sqlexptypename)){
            
-           return $result->num_rows;       
+           return $result->num_rows +1 ;       
 
         }
     }

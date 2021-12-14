@@ -60,7 +60,7 @@ $mysqli = dbconnect();
                        <a class="nav-link text-white" href="zajecia.php">Zajęcia NFM</a>
                    </li>
                    <li class="nav-item bg-primary shadow-sm">
-                       <a class="nav-link text-white" href="#">Statystyki</a>
+                       <a class="nav-link text-white" href="expstats.php">Statystyki</a>
                    </li>
 
                    <li class="nav-item bg-primary shadow-sm rounded-right">

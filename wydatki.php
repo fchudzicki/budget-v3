@@ -12,8 +12,8 @@ include 'header.php';
 
 
 $rok = date("Y");
-$teraz = date("Ymd");
-$terazstr = strtotime( $teraz );
+$teraz = date("Y-m-d H:i:s");
+
 if (isset($_GET['newYear']))
 {
     $rok = filter_var($_GET['newYear'], FILTER_SANITIZE_NUMBER_INT);
@@ -22,6 +22,8 @@ if (isset($_GET['newYear']))
 
 // Ilość typów wydatku
 $number_of_exptype = exptypenumber();
+
+echo $number_of_exptype;
 
 // Edycja rekordu z modal window
 if (isset($_POST['edytujSubmit']))
@@ -69,7 +71,7 @@ updatemodalmain();
     $userid=$_SESSION['id'];
  
     
-    $expenseid = insExpense($userid,$expensedate,$description,$sum);
+    $expenseid = insExpense($userid,$expensedate,$description,$sum,$teraz);
 
  
     for ($n=1;$n<=$number_of_exptype;$n++){
