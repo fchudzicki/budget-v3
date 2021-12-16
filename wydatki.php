@@ -23,7 +23,6 @@ if (isset($_GET['newYear']))
 // Ilość typów wydatku
 $number_of_exptype = exptypenumber();
 
-echo $number_of_exptype;
 
 // Edycja rekordu z modal window
 if (isset($_POST['edytujSubmit']))
