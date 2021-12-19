@@ -111,7 +111,7 @@ for ($i = 1; $i <= 12; $i++)
         ?>
         </select>
 		</form>	  
-        <p><?php echo month_sum($rok,$miesiac);?></p>
+        <h2 class="text-center">Suma wydatków <?php echo month_sum($rok,$miesiac);?> zł</h2>
         
         <div class="accordion" id="accordionExample">
                     <?php 
@@ -150,18 +150,12 @@ for ($i = 1; $i <= 12; $i++)
 
                 </div>
         
-        <?php
+ 
         
 
 
 
-        for ($i=1;($i<=exptypenumber());$i++){
-            echo $i;
-echo month_type_sum($rok,$miesiac,$i);
-echo "<br>";
-        }
-
-?>
+      
         </div> 
 
 

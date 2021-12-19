@@ -56,9 +56,17 @@ if (isset($_POST['edytujSubmit']))
 }
 updatemodalmain();
 }
+//                      Usuwanie wydatku
+if (isset($_POST['delete_exp']))
+{
+    $exp_id = filter_var($_POST['Id'], FILTER_SANITIZE_NUMBER_INT);
+    $expdesc = filter_var($_POST['szczegUpdate'], FILTER_SANITIZE_STRING);
+    // $data = filter_var($_POST['dataUpdate'], FILTER_SANITIZE_STRING);
+    // $kwota = filter_var($_POST['kwotaUpdate'], FILTER_SANITIZE_STRING);
 
- 
+delete_by_exp_id($exp_id,$expdesc);
 
+}    
 //            Dodawanie rekordu do tabeli
 
     if(isset($_POST['dodaj_wydatek'])){
@@ -310,7 +318,10 @@ updatemodalmain();
                                         </div>
                                         <div class='modal-footer'>
                                           <button type='button' class='btn btn-secondary' data-dismiss='modal'>Zamknij</button>
-                                          <button type='submit' name ='edytujSubmit' class='btn btn-primary'>Zapisz zmiany</button>
+                                          <button type='submit' name ='delete_exp' onclick='return confirm(`Czy napewno chcesz usunąć ten wydatek?`)'class='btn btn-danger'>Usuń wydatek</button>
+                                          <button type='submit' name ='edytujSubmit'  class='btn btn-primary'>Zapisz zmiany</button>
+
+                                          
                                         </div>
                                         
                                     </div>

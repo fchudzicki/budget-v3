@@ -169,6 +169,21 @@ function exptypenumber(){
         }
     }
 
+function delete_by_exp_id($exp_id,$expdesc){
+   
+    $mysqli = dbconnect();
+    $sql = "DELETE expenses, exptype FROM expenses INNER JOIN exptype ON expenses.exp_id=exptype.expenseid WHERE expenses.exp_id = ?";
+
+    $statement = $mysqli->prepare($sql);
+    $statement->bind_param('i', $exp_id);
+    if($statement->execute()){
+        print '<div class = "text-danger"> Usunięto rekord o id : ' .$exp_id.' i opisie : '.$expdesc.' </div>'; 
+   }else{
+       die('Error : ('. $mysqli->errno .') '. $mysqli->error);
+   }
+
+
+}
 
 
 
